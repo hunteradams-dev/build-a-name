@@ -33,7 +33,7 @@ const data: Record<NameType, SyllableData> = {
 };
 
 export class SyllableGenerator {
-  static generate(type: NameType, numSyllables: number): string {
+  static generateWord(type: NameType, numSyllables: number): string {
     const { prefixes, middles, suffixes } = data[type];
 
     if (numSyllables < 1) numSyllables = 1;
@@ -45,7 +45,7 @@ export class SyllableGenerator {
     name += prefix;
 
     if (numSyllables === 1) {
-      return name;
+      return name.charAt(0).toUpperCase() + name.slice(1);
     }
 
     // Add middles
@@ -60,5 +60,18 @@ export class SyllableGenerator {
 
     // Capitalize first letter
     return name.charAt(0).toUpperCase() + name.slice(1);
+  }
+
+  static generate(
+    type: NameType,
+    numSyllables: number,
+    numWords: number = 1,
+    hyphenated: boolean = false
+  ): string {
+    const words: string[] = [];
+    for (let i = 0; i < numWords; i++) {
+      words.push(this.generateWord(type, numSyllables));
+    }
+    return words.join(hyphenated ? "-" : " ");
   }
 }
