@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import { SyllableGenerator } from "./generators/SyllableGenerator";
 import type { NameType } from "./generators/SyllableGenerator";
@@ -8,6 +8,14 @@ function App() {
   const [numSyllables, setNumSyllables] = useState<number>(2);
   const [count, setCount] = useState<number>(10);
   const [generatedNames, setGeneratedNames] = useState<string[]>([]);
+  const [savedNames, setSavedNames] = useState<string[]>(() => {
+    const saved = localStorage.getItem("savedNames");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("savedNames", JSON.stringify(savedNames));
+  }, [savedNames]);
 
   const handleGenerate = () => {
     const names: string[] = [];
@@ -15,6 +23,18 @@ function App() {
       names.push(SyllableGenerator.generate(nameType, numSyllables));
     }
     setGeneratedNames(names);
+  };
+
+  const toggleSave = (name: string) => {
+    if (savedNames.includes(name)) {
+      setSavedNames(savedNames.filter((n) => n !== name));
+    } else {
+      setSavedNames([...savedNames, name]);
+    }
+  };
+
+  const clearSaved = () => {
+    setSavedNames([]);
   };
 
   return (
@@ -62,16 +82,57 @@ function App() {
       </div>
 
       <div className="results">
+        <h3>Generated Names</h3>
         {generatedNames.length > 0 ? (
           <ul>
             {generatedNames.map((name, index) => (
-              <li key={index}>{name}</li>
+              <li key={index} className="name-item">
+                <span>{name}</span>
+                <button
+                  onClick={() => toggleSave(name)}
+                  className={`save-btn ${
+                    savedNames.includes(name) ? "saved" : ""
+                  }`}
+                  title={
+                    savedNames.includes(name)
+                      ? "Remove from saved"
+                      : "Save name"
+                  }
+                >
+                  {savedNames.includes(name) ? "❤️" : "🤍"}
+                </button>
+              </li>
             ))}
           </ul>
         ) : (
           <p className="placeholder">Click generate to see names</p>
         )}
       </div>
+
+      {savedNames.length > 0 && (
+        <div className="results saved-section">
+          <div className="saved-header">
+            <h3>Saved Names ({savedNames.length})</h3>
+            <button onClick={clearSaved} className="clear-btn">
+              Clear All
+            </button>
+          </div>
+          <ul>
+            {savedNames.map((name, index) => (
+              <li key={index} className="name-item">
+                <span>{name}</span>
+                <button
+                  onClick={() => toggleSave(name)}
+                  className="save-btn saved"
+                  title="Remove from saved"
+                >
+                  ❤️
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
