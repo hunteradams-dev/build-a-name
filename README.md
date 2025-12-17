@@ -41,29 +41,3 @@ To add a new category:
 2.  Export prefixes, middles, and suffixes.
 3.  Update `src/generators/SyllableGenerator.ts` to include the new type and data.
 4.  Update the UI in `src/App.tsx` to add the new option.
-    import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-globalIgnores(['dist']),
-{
-files: ['**/*.{ts,tsx}'],
-extends: [
-// Other configs...
-// Enable lint rules for React
-reactX.configs['recommended-typescript'],
-// Enable lint rules for React DOM
-reactDom.configs.recommended,
-],
-languageOptions: {
-parserOptions: {
-project: ['./tsconfig.node.json', './tsconfig.app.json'],
-tsconfigRootDir: import.meta.dirname,
-},
-// other options...
-},
-},
-])
-
-```
-
-```
