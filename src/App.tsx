@@ -1,7 +1,36 @@
-import { useState, useEffect } from "react";
-import "./App.css";
+import { useState, useEffect, useMemo } from "react";
 import { SyllableGenerator } from "./generators/SyllableGenerator";
 import type { NameType } from "./generators/SyllableGenerator";
+import {
+  ThemeProvider,
+  createTheme,
+  CssBaseline,
+  Container,
+  Paper,
+  Typography,
+  Box,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Slider,
+  Button,
+  List,
+  ListItem,
+  ListItemText,
+  IconButton,
+  Stack,
+  Grid,
+  Divider,
+} from "@mui/material";
+import type { PaletteMode } from "@mui/material";
+import {
+  Brightness4,
+  Brightness7,
+  Favorite,
+  FavoriteBorder,
+  Delete,
+} from "@mui/icons-material";
 
 function App() {
   const [nameType, setNameType] = useState<NameType>("place");
@@ -12,6 +41,22 @@ function App() {
     const saved = localStorage.getItem("savedNames");
     return saved ? JSON.parse(saved) : [];
   });
+
+  const [mode, setMode] = useState<PaletteMode>("dark");
+
+  const theme = useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode,
+        },
+      }),
+    [mode]
+  );
+
+  const toggleColorMode = () => {
+    setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
+  };
 
   useEffect(() => {
     localStorage.setItem("savedNames", JSON.stringify(savedNames));
@@ -38,102 +83,161 @@ function App() {
   };
 
   return (
-    <div className="container">
-      <h1>Random Name Generator</h1>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Container maxWidth="md" sx={{ py: 4 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 4,
+          }}
+        >
+          <Typography variant="h4" component="h1" fontWeight="bold">
+            Random Name Generator
+          </Typography>
+          <IconButton onClick={toggleColorMode} color="inherit">
+            {theme.palette.mode === "dark" ? <Brightness7 /> : <Brightness4 />}
+          </IconButton>
+        </Box>
 
-      <div className="controls">
-        <div className="control-group">
-          <label>Type:</label>
-          <select
-            value={nameType}
-            onChange={(e) => setNameType(e.target.value as NameType)}
-          >
-            <option value="place">Place</option>
-            <option value="person">Person</option>
-            <option value="creature">Creature</option>
-          </select>
-        </div>
+        <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
+          <Stack spacing={3}>
+            <FormControl fullWidth>
+              <InputLabel>Type</InputLabel>
+              <Select
+                value={nameType}
+                label="Type"
+                onChange={(e) => setNameType(e.target.value as NameType)}
+              >
+                <MenuItem value="place">Place</MenuItem>
+                <MenuItem value="person">Person</MenuItem>
+                <MenuItem value="creature">Creature</MenuItem>
+              </Select>
+            </FormControl>
 
-        <div className="control-group">
-          <label>Syllables: {numSyllables}</label>
-          <input
-            type="range"
-            min="1"
-            max="5"
-            value={numSyllables}
-            onChange={(e) => setNumSyllables(parseInt(e.target.value))}
-          />
-        </div>
+            <Box>
+              <Typography gutterBottom>Syllables: {numSyllables}</Typography>
+              <Slider
+                value={numSyllables}
+                min={1}
+                max={5}
+                marks
+                valueLabelDisplay="auto"
+                onChange={(_, value) => setNumSyllables(value as number)}
+              />
+            </Box>
 
-        <div className="control-group">
-          <label>Count: {count}</label>
-          <input
-            type="range"
-            min="1"
-            max="50"
-            value={count}
-            onChange={(e) => setCount(parseInt(e.target.value))}
-          />
-        </div>
+            <Box>
+              <Typography gutterBottom>Count: {count}</Typography>
+              <Slider
+                value={count}
+                min={1}
+                max={50}
+                valueLabelDisplay="auto"
+                onChange={(_, value) => setCount(value as number)}
+              />
+            </Box>
 
-        <button onClick={handleGenerate} className="generate-btn">
-          Generate Names
-        </button>
-      </div>
+            <Button
+              variant="contained"
+              size="large"
+              onClick={handleGenerate}
+              fullWidth
+            >
+              Generate Names
+            </Button>
+          </Stack>
+        </Paper>
 
-      <div className="results">
-        <h3>Generated Names</h3>
-        {generatedNames.length > 0 ? (
-          <ul>
-            {generatedNames.map((name, index) => (
-              <li key={index} className="name-item">
-                <span>{name}</span>
-                <button
-                  onClick={() => toggleSave(name)}
-                  className={`save-btn ${
-                    savedNames.includes(name) ? "saved" : ""
-                  }`}
-                  title={
-                    savedNames.includes(name)
-                      ? "Remove from saved"
-                      : "Save name"
-                  }
+        <Grid container spacing={4}>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Paper elevation={2} sx={{ p: 2, height: "100%" }}>
+              <Typography variant="h6" gutterBottom>
+                Generated Names
+              </Typography>
+              {generatedNames.length > 0 ? (
+                <List dense>
+                  {generatedNames.map((name, index) => (
+                    <ListItem
+                      key={`${name}-${index}`}
+                      secondaryAction={
+                        <IconButton
+                          edge="end"
+                          onClick={() => toggleSave(name)}
+                          color={
+                            savedNames.includes(name) ? "error" : "default"
+                          }
+                        >
+                          {savedNames.includes(name) ? (
+                            <Favorite />
+                          ) : (
+                            <FavoriteBorder />
+                          )}
+                        </IconButton>
+                      }
+                    >
+                      <ListItemText primary={name} />
+                    </ListItem>
+                  ))}
+                </List>
+              ) : (
+                <Typography variant="body2" color="text.secondary">
+                  Click generate to see names
+                </Typography>
+              )}
+            </Paper>
+          </Grid>
+
+          {savedNames.length > 0 && (
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Paper elevation={2} sx={{ p: 2, height: "100%" }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: 1,
+                  }}
                 >
-                  {savedNames.includes(name) ? "❤️" : "🤍"}
-                </button>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="placeholder">Click generate to see names</p>
-        )}
-      </div>
-
-      {savedNames.length > 0 && (
-        <div className="results saved-section">
-          <div className="saved-header">
-            <h3>Saved Names ({savedNames.length})</h3>
-            <button onClick={clearSaved} className="clear-btn">
-              Clear All
-            </button>
-          </div>
-          <ul>
-            {savedNames.map((name, index) => (
-              <li key={index} className="name-item">
-                <span>{name}</span>
-                <button
-                  onClick={() => toggleSave(name)}
-                  className="save-btn saved"
-                  title="Remove from saved"
-                >
-                  ❤️
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </div>
+                  <Typography variant="h6">
+                    Saved Names ({savedNames.length})
+                  </Typography>
+                  <Button
+                    size="small"
+                    color="error"
+                    startIcon={<Delete />}
+                    onClick={clearSaved}
+                  >
+                    Clear
+                  </Button>
+                </Box>
+                <Divider sx={{ mb: 1 }} />
+                <List dense>
+                  {savedNames.map((name, index) => (
+                    <ListItem
+                      key={`${name}-${index}`}
+                      secondaryAction={
+                        <IconButton
+                          edge="end"
+                          onClick={() => toggleSave(name)}
+                          color="error"
+                        >
+                          <Favorite />
+                        </IconButton>
+                      }
+                    >
+                      <ListItemText primary={name} />
+                    </ListItem>
+                  ))}
+                </List>
+              </Paper>
+            </Grid>
+          )}
+        </Grid>
+      </Container>
+    </ThemeProvider>
   );
 }
 
