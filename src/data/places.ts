@@ -1,4 +1,4 @@
-export const placePrefixes = [
+export const PLACE_PREFIXES = [
   "Aer",
   "Al",
   "Am",
@@ -183,7 +183,7 @@ export const placePrefixes = [
   "Zyl",
 ];
 
-export const placeMiddles = [
+export const PLACE_MIDDLES = [
   "a",
   "e",
   "i",
@@ -311,12 +311,14 @@ export const placeMiddles = [
   "yz",
 ];
 
-export const placeSuffixes = [
+export const PLACE_GENERIC_SUFFIXES = [
   "ia",
   "on",
   "us",
   "um",
   "is",
+  "iff",
+  "mont",
   "os",
   "as",
   "es",
@@ -328,14 +330,28 @@ export const placeSuffixes = [
   "o",
   "u",
   "y",
+];
+
+export const PLACE_CONTINENT_SUFFIXES = [
+  "ia",
+  "ica",
+  "ea",
+  "ope",
+  "os",
+  "us",
+  "as",
+  "is",
+  "ar",
+  "or",
+  "ara",
+  "ora",
+  "ae",
+  "ai",
+  "au",
+];
+
+export const PLACE_NATURAL_SUFFIXES = [
   "land",
-  "gard",
-  "heim",
-  "berg",
-  "burg",
-  "grad",
-  "ford",
-  "field",
   "wood",
   "forest",
   "dale",
@@ -354,12 +370,6 @@ export const placeSuffixes = [
   "point",
   "bay",
   "cove",
-  "port",
-  "harbor",
-  "haven",
-  "dock",
-  "quay",
-  "wharf",
   "sea",
   "ocean",
   "lake",
@@ -372,9 +382,33 @@ export const placeSuffixes = [
   "creek",
   "spring",
   "well",
-  "fountain",
   "falls",
   "rapids",
+  "field",
+  "meadow",
+  "pasture",
+  "range",
+  "plain",
+  "prairie",
+  "steppe",
+  "tundra",
+  "desert",
+  "waste",
+  "wild",
+  "grove",
+  "orchard",
+  "vineyard",
+  "garden",
+  "park",
+];
+
+export const PLACE_ARTIFICIAL_SUFFIXES = [
+  "gard",
+  "heim",
+  "berg",
+  "burg",
+  "grad",
+  "ford",
   "bridge",
   "gate",
   "wall",
@@ -427,22 +461,15 @@ export const placeSuffixes = [
   "terminal",
   "port",
   "dock",
+  "quay",
+  "wharf",
   "yard",
   "lot",
-  "park",
-  "garden",
-  "grove",
-  "orchard",
-  "vineyard",
-  "field",
-  "meadow",
-  "pasture",
-  "range",
-  "plain",
-  "prairie",
-  "steppe",
-  "tundra",
-  "desert",
-  "waste",
-  "wild",
+];
+
+export const ALL_PLACE_SUFFIXES = [
+  ...PLACE_GENERIC_SUFFIXES,
+  ...PLACE_NATURAL_SUFFIXES,
+  ...PLACE_ARTIFICIAL_SUFFIXES,
+  ...PLACE_CONTINENT_SUFFIXES,
 ];

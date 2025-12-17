@@ -20,12 +20,16 @@ const THEME_COLORS = {
     secondary: "#d81b60", // Pink
     background: "#f3e5f5", // Very light purple
     paper: "#ffffff",
+    switchThumb: "#4caf50",
+    switchTrack: "#4caf50",
   },
   dark: {
     primary: "#e0e1dd", // Light Purple
     secondary: "#f48fb1", // Light Pink
     background: "#0d1b2a",
     paper: "#1b263b",
+    switchThumb: "#8888f3ff",
+    switchTrack: "#444b92ff",
   },
 };
 
@@ -104,6 +108,26 @@ export const AppThemeProvider = ({ children }: { children: ReactNode }) => {
                   paper: THEME_COLORS.dark.paper,
                 },
               }),
+        },
+        components: {
+          MuiSwitch: {
+            styleOverrides: {
+              switchBase: {
+                "&.Mui-checked": {
+                  color:
+                    mode === "light"
+                      ? THEME_COLORS.light.switchThumb
+                      : THEME_COLORS.dark.switchThumb,
+                },
+                "&.Mui-checked + .MuiSwitch-track": {
+                  backgroundColor:
+                    mode === "light"
+                      ? THEME_COLORS.light.switchTrack
+                      : THEME_COLORS.dark.switchTrack,
+                },
+              },
+            },
+          },
         },
       }),
     [mode]

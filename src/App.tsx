@@ -22,6 +22,10 @@ import {
   Divider,
   FormControlLabel,
   Switch,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Tooltip,
 } from "@mui/material";
 import {
   Brightness4,
@@ -29,8 +33,10 @@ import {
   Favorite,
   FavoriteBorder,
   Delete,
+  ExpandMore,
+  InfoOutlined,
 } from "@mui/icons-material";
-import { NAME_TYPES } from "./utils";
+import { APP_TITLE, DEMONYM_EXPLAINER, NAME_TYPES } from "./utils";
 import { useColorMode } from "./context/ThemeContext";
 
 function App() {
@@ -43,9 +49,16 @@ function App() {
   const form = useForm({
     defaultValues: {
       nameType: "place" as NameType,
-      numSyllables: 2,
+      numSyllables: [2],
       numWords: 1,
       hyphenated: false,
+      demonym: false,
+      includeNatural: true,
+      includeManMade: true,
+      includeGeneric: true,
+      includeContinent: false,
+      includePrepositions: false,
+      gender: "any" as "masculine" | "feminine" | "neutral" | "any",
       count: 10,
     },
     onSubmit: async ({ value }) => {
@@ -56,7 +69,16 @@ function App() {
             value.nameType,
             value.numSyllables,
             value.numWords,
-            value.hyphenated
+            value.hyphenated,
+            value.demonym,
+            {
+              includeNatural: value.includeNatural,
+              includeArtificial: value.includeManMade,
+              includeGeneric: value.includeGeneric,
+              includeContinent: value.includeContinent,
+              includePrepositions: value.includePrepositions,
+              gender: value.gender,
+            }
           )
         );
       }
@@ -98,122 +120,380 @@ function App() {
           fontWeight="bold"
           sx={{ fontFamily: "Prata" }}
         >
-          Make A Name For Yourself
+          {APP_TITLE}
         </Typography>
         <IconButton onClick={toggleColorMode} color="inherit">
           {mode === "dark" ? <Brightness7 /> : <Brightness4 />}
         </IconButton>
       </Box>
 
-      <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
-        <Stack spacing={3}>
-          <form.Field
-            name="nameType"
-            children={(field) => (
-              <FormControl fullWidth>
-                <InputLabel>Type</InputLabel>
-                <Select
-                  value={field.state.value}
-                  label="Type"
-                  onChange={(e) =>
-                    field.handleChange(e.target.value as NameType)
-                  }
-                >
-                  {NAME_TYPES.map((n, i) => (
-                    <MenuItem key={`${n}_at_${i}`} value={n.toLowerCase()}>
-                      {n}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            )}
-          />
-
-          <form.Field
-            name="numSyllables"
-            children={(field) => (
-              <Box>
-                <Typography gutterBottom>
-                  Syllables: {field.state.value}
-                </Typography>
-                <Slider
-                  value={field.state.value}
-                  min={1}
-                  max={5}
-                  marks
-                  valueLabelDisplay="auto"
-                  onChange={(_, value) => field.handleChange(value as number)}
-                />
-              </Box>
-            )}
-          />
-
-          <form.Field
-            name="numWords"
-            children={(field) => (
-              <Box>
-                <Typography gutterBottom>
-                  Words per Name: {field.state.value}
-                </Typography>
-                <Slider
-                  value={field.state.value}
-                  min={1}
-                  max={3}
-                  marks
-                  valueLabelDisplay="auto"
-                  onChange={(_, value) => field.handleChange(value as number)}
-                />
-              </Box>
-            )}
-          />
-
-          <form.Subscribe
-            selector={(state) => state.values.numWords}
-            children={(numWords) => (
-              <form.Field
-                name="hyphenated"
-                children={(field) => (
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={field.state.value}
-                        onChange={(e) => field.handleChange(e.target.checked)}
-                        disabled={numWords === 1}
-                      />
+      <Accordion defaultExpanded sx={{ mb: 4 }}>
+        <AccordionSummary expandIcon={<ExpandMore />}>
+          <Typography variant="h6">Generator Settings</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Stack spacing={3}>
+            <form.Field
+              name="nameType"
+              children={(field) => (
+                <FormControl fullWidth>
+                  <InputLabel>Type</InputLabel>
+                  <Select
+                    value={field.state.value}
+                    label="Type"
+                    onChange={(e) =>
+                      field.handleChange(e.target.value as NameType)
                     }
-                    label="Hyphenated"
-                  />
-                )}
-              />
-            )}
-          />
+                  >
+                    {NAME_TYPES.map((n, i) => (
+                      <MenuItem key={`${n}_at_${i}`} value={n.toLowerCase()}>
+                        {n}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              )}
+            />
 
-          <form.Field
-            name="count"
-            children={(field) => (
-              <Box>
-                <Typography gutterBottom>Count: {field.state.value}</Typography>
-                <Slider
-                  value={field.state.value}
-                  min={1}
-                  max={50}
-                  valueLabelDisplay="auto"
-                  onChange={(_, value) => field.handleChange(value as number)}
+            <form.Subscribe
+              selector={(state) => state.values.nameType}
+              children={(nameType) =>
+                nameType === "place" || nameType === "all" ? (
+                  <Accordion variant="outlined" sx={{ mt: 2 }}>
+                    <AccordionSummary expandIcon={<ExpandMore />}>
+                      <Typography>Suffix Options</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <Box
+                        sx={{
+                          display: "grid",
+                          gridTemplateColumns:
+                            "repeat(auto-fill, minmax(130px, 1fr))",
+                          gap: 1,
+                        }}
+                      >
+                        <form.Field
+                          name="includeNatural"
+                          children={(field) => (
+                            <Tooltip
+                              title="Includes nature-based endings like -land, -wood, -dale, -river"
+                              arrow
+                              placement="top"
+                            >
+                              <FormControlLabel
+                                sx={{ whiteSpace: "nowrap" }}
+                                control={
+                                  <Switch
+                                    checked={field.state.value}
+                                    onChange={(e) =>
+                                      field.handleChange(e.target.checked)
+                                    }
+                                  />
+                                }
+                                label="Natural"
+                              />
+                            </Tooltip>
+                          )}
+                        />
+                        <form.Field
+                          name="includeManMade"
+                          children={(field) => (
+                            <Tooltip
+                              title="Includes constructed endings like -burg, -town, -ford, -port"
+                              arrow
+                              placement="top"
+                            >
+                              <FormControlLabel
+                                sx={{ whiteSpace: "nowrap" }}
+                                control={
+                                  <Switch
+                                    checked={field.state.value}
+                                    onChange={(e) =>
+                                      field.handleChange(e.target.checked)
+                                    }
+                                  />
+                                }
+                                label="Man-Made"
+                              />
+                            </Tooltip>
+                          )}
+                        />
+                        <form.Field
+                          name="includeGeneric"
+                          children={(field) => (
+                            <Tooltip
+                              title="Includes abstract endings like -ia, -on, -us, -um"
+                              arrow
+                              placement="top"
+                            >
+                              <FormControlLabel
+                                sx={{ whiteSpace: "nowrap" }}
+                                control={
+                                  <Switch
+                                    checked={field.state.value}
+                                    onChange={(e) =>
+                                      field.handleChange(e.target.checked)
+                                    }
+                                  />
+                                }
+                                label="Generic"
+                              />
+                            </Tooltip>
+                          )}
+                        />
+                        <form.Field
+                          name="includeContinent"
+                          children={(field) => (
+                            <Tooltip
+                              title="Includes continent-style endings like -ica, -ea, -ope"
+                              arrow
+                              placement="top"
+                            >
+                              <FormControlLabel
+                                sx={{ whiteSpace: "nowrap" }}
+                                control={
+                                  <Switch
+                                    checked={field.state.value}
+                                    onChange={(e) =>
+                                      field.handleChange(e.target.checked)
+                                    }
+                                  />
+                                }
+                                label="Continent"
+                              />
+                            </Tooltip>
+                          )}
+                        />
+                      </Box>
+                    </AccordionDetails>
+                  </Accordion>
+                ) : null
+              }
+            />
+
+            <form.Subscribe
+              selector={(state) => state.values.numWords}
+              children={(numWords) => (
+                <form.Field
+                  name="numSyllables"
+                  children={(field) => {
+                    const values = Array.isArray(field.state.value)
+                      ? field.state.value
+                      : [field.state.value as number];
+
+                    return (
+                      <Box>
+                        {Array.from({ length: numWords }).map((_, index) => {
+                          const val =
+                            values[index] ?? values[values.length - 1] ?? 2;
+                          return (
+                            <Box key={index} sx={{ mb: numWords > 1 ? 2 : 0 }}>
+                              <Typography gutterBottom>
+                                {numWords > 1
+                                  ? `Word ${index + 1} Syllables`
+                                  : "Syllables"}
+                                : {val}
+                              </Typography>
+                              <Slider
+                                value={val}
+                                min={1}
+                                max={5}
+                                marks
+                                valueLabelDisplay="auto"
+                                onChange={(_, newValue) => {
+                                  const newValues = [...values];
+                                  // Ensure array is long enough
+                                  while (newValues.length <= index) {
+                                    newValues.push(
+                                      newValues[newValues.length - 1] ?? 2
+                                    );
+                                  }
+                                  newValues[index] = newValue as number;
+                                  field.handleChange(newValues);
+                                }}
+                              />
+                            </Box>
+                          );
+                        })}
+                      </Box>
+                    );
+                  }}
                 />
-              </Box>
-            )}
-          />
+              )}
+            />
 
-          <Button
-            variant="contained"
-            size="large"
-            onClick={form.handleSubmit}
-            fullWidth
-          >
-            Generate Names
-          </Button>
-        </Stack>
-      </Paper>
+            <form.Field
+              name="numWords"
+              children={(field) => (
+                <Box>
+                  <Typography gutterBottom>
+                    Words per Name: {field.state.value}
+                  </Typography>
+                  <Slider
+                    value={field.state.value}
+                    min={1}
+                    max={3}
+                    marks
+                    valueLabelDisplay="auto"
+                    onChange={(_, value) => field.handleChange(value as number)}
+                  />
+                </Box>
+              )}
+            />
+
+            <Accordion variant="outlined" sx={{ mt: 2 }}>
+              <AccordionSummary expandIcon={<ExpandMore />}>
+                <Typography>Additional Settings</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Stack spacing={2}>
+                  <form.Subscribe
+                    selector={(state) => state.values.numWords}
+                    children={(numWords) => (
+                      <form.Field
+                        name="hyphenated"
+                        children={(field) => (
+                          <FormControlLabel
+                            control={
+                              <Switch
+                                checked={field.state.value}
+                                onChange={(e) =>
+                                  field.handleChange(e.target.checked)
+                                }
+                                disabled={numWords === 1}
+                              />
+                            }
+                            label="Hyphenated"
+                          />
+                        )}
+                      />
+                    )}
+                  />
+
+                  <form.Subscribe
+                    selector={(state) => state.values.nameType}
+                    children={(nameType) =>
+                      nameType === "person" ? (
+                        <form.Field
+                          name="gender"
+                          children={(field) => (
+                            <FormControl fullWidth>
+                              <InputLabel>Gender Association</InputLabel>
+                              <Select
+                                value={field.state.value}
+                                label="Gender Association"
+                                onChange={(e) =>
+                                  field.handleChange(e.target.value as any)
+                                }
+                              >
+                                <MenuItem value="any">Any</MenuItem>
+                                <MenuItem value="masculine">Masculine</MenuItem>
+                                <MenuItem value="feminine">Feminine</MenuItem>
+                                <MenuItem value="neutral">Neutral</MenuItem>
+                              </Select>
+                            </FormControl>
+                          )}
+                        />
+                      ) : null
+                    }
+                  />
+
+                  <form.Subscribe
+                    selector={(state) => state.values.nameType}
+                    children={(nameType) =>
+                      nameType === "place" || nameType === "all" ? (
+                        <>
+                          <form.Subscribe
+                            selector={(state) => state.values.numWords}
+                            children={(numWords) => (
+                              <form.Field
+                                name="includePrepositions"
+                                children={(field) => (
+                                  <FormControlLabel
+                                    control={
+                                      <Switch
+                                        checked={field.state.value}
+                                        onChange={(e) =>
+                                          field.handleChange(e.target.checked)
+                                        }
+                                        disabled={numWords === 1}
+                                      />
+                                    }
+                                    label="Include Prepositions"
+                                  />
+                                )}
+                              />
+                            )}
+                          />
+
+                          <form.Field
+                            name="demonym"
+                            children={(field) => (
+                              <FormControlLabel
+                                control={
+                                  <Switch
+                                    checked={field.state.value}
+                                    onChange={(e) =>
+                                      field.handleChange(e.target.checked)
+                                    }
+                                  />
+                                }
+                                label={
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    Convert to Demonym
+                                    <Tooltip title={DEMONYM_EXPLAINER}>
+                                      <InfoOutlined
+                                        fontSize="small"
+                                        sx={{ ml: 1, opacity: 0.6 }}
+                                      />
+                                    </Tooltip>
+                                  </Box>
+                                }
+                              />
+                            )}
+                          />
+                        </>
+                      ) : null
+                    }
+                  />
+                </Stack>
+              </AccordionDetails>
+            </Accordion>
+
+            <form.Field
+              name="count"
+              children={(field) => (
+                <Box>
+                  <Typography gutterBottom>
+                    Count: {field.state.value}
+                  </Typography>
+                  <Slider
+                    value={field.state.value}
+                    min={1}
+                    max={100}
+                    valueLabelDisplay="auto"
+                    onChange={(_, value) => field.handleChange(value as number)}
+                  />
+                </Box>
+              )}
+            />
+
+            <Button
+              variant="contained"
+              size="large"
+              onClick={form.handleSubmit}
+              fullWidth
+            >
+              Generate Names
+            </Button>
+          </Stack>
+        </AccordionDetails>
+      </Accordion>
 
       <Grid container spacing={4}>
         <Grid size={{ xs: 12, md: 6 }}>
