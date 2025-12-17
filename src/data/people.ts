@@ -1,4 +1,4 @@
-export const peoplePrefixes = [
+export const PEOPLE_PREFIXES = [
   "Ad",
   "Ae",
   "Al",
@@ -167,7 +167,7 @@ export const peoplePrefixes = [
   "Zy",
 ];
 
-export const peopleMiddles = [
+export const PEOPLE_MIDDLES = [
   "a",
   "e",
   "i",
@@ -254,7 +254,7 @@ export const peopleMiddles = [
   "zy",
 ];
 
-export const peopleSuffixes = [
+export const PEOPLE_SUFFIXES = [
   "a",
   "e",
   "i",
@@ -339,4 +339,74 @@ export const peopleSuffixes = [
   "sh",
   "kh",
   "gh",
+];
+
+export const PEOPLE_SUFFIXES_MASCULINE = [
+  "us",
+  "os",
+  "or",
+  "er",
+  "an",
+  "on",
+  "en",
+  "ir",
+  "ur",
+  "is",
+  "as",
+  "ar",
+  "om",
+  "um",
+  "ak",
+  "ek",
+  "ik",
+  "ok",
+  "uk",
+  "ax",
+  "ex",
+  "ix",
+  "ox",
+  "ux",
+  "ald",
+  "ard",
+  "art",
+  "olt",
+  "ord",
+  "ort",
+  "ulf",
+  "olf",
+  "orn",
+  "arn",
+];
+
+export const PEOPLE_SUFFIXES_FEMININE = [
+  "a",
+  "ia",
+  "ea",
+  "ae",
+  "elle",
+  "ella",
+  "ina",
+  "ine",
+  "enne",
+  "anna",
+  "anne",
+  "isse",
+  "essa",
+  "ette",
+  "etta",
+  "is",
+  "ys",
+  "es",
+  "ie",
+  "ey",
+  "i",
+  "y",
+  "ah",
+  "eh",
+  "ih",
+  "oh",
+  "uh",
+  "aya",
+  "eya",
+  "iya",
 ];

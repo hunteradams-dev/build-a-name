@@ -1,4 +1,4 @@
-export const creaturePrefixes = [
+export const CREATURE_PREFIXES = [
   "Grak",
   "Krak",
   "Drak",
@@ -61,7 +61,7 @@ export const creaturePrefixes = [
   "Vvy",
 ];
 
-export const creatureMiddles = [
+export const CREATURE_MIDDLES = [
   "gra",
   "gre",
   "gri",
@@ -136,7 +136,7 @@ export const creatureMiddles = [
   "zly",
 ];
 
-export const creatureSuffixes = [
+export const CREATURE_SUFFIXES = [
   "ak",
   "ek",
   "ik",
