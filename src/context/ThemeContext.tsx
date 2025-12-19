@@ -14,6 +14,11 @@ import {
   CssBaseline,
 } from "@mui/material";
 
+export const THEME_MODES: Record<string, PaletteMode> = {
+    light: 'light',
+    dark: 'dark'
+}
+
 const THEME_COLORS = {
   light: {
     primary: "#5e35b1", // Deep Purple
@@ -40,7 +45,7 @@ interface ColorModeContextType {
 
 const ColorModeContext = createContext<ColorModeContextType>({
   toggleColorMode: () => {},
-  mode: "light",
+  mode: THEME_MODES.light,
 });
 
 export const useColorMode = () => useContext(ColorModeContext);

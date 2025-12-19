@@ -1,1 +1,42 @@
 /* Global styles are handled by Material UI CssBaseline */
+
+/* Skip link for keyboard navigation accessibility */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #000;
+  color: #fff;
+  padding: 8px 16px;
+  text-decoration: none;
+  z-index: 10000;
+  border-radius: 0 0 4px 0;
+  font-weight: bold;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Ensure focus outlines are visible for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid #5e35b1;
+  outline-offset: 2px;
+}
+
+/* High contrast focus for dark mode */
+@media (prefers-color-scheme: dark) {
+  *:focus-visible {
+    outline-color: #e0e1dd;
+  }
+}
+
+/* Ensure interactive elements have visible focus states */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
