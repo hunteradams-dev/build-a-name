@@ -64,7 +64,8 @@ export class SyllableGenerator {
   static generateWord(
     type: NameType,
     numSyllables: number,
-    customSuffixes?: string[]
+    customSuffixes?: string[],
+    startingLetter?: string
   ): string {
     const { prefixes, middles, suffixes: defaultSuffixes } = data[type];
     const suffixes = customSuffixes || defaultSuffixes;
@@ -73,8 +74,18 @@ export class SyllableGenerator {
 
     let name = "";
 
-    // Pick random prefix
-    const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+    // Pick random prefix, filtered by starting letter if specified
+    let validPrefixes = prefixes;
+    if (startingLetter) {
+      const letter = startingLetter.toLowerCase();
+      validPrefixes = prefixes.filter((p) =>
+        p.toLowerCase().startsWith(letter)
+      );
+      // Fallback to all prefixes if none match
+      if (validPrefixes.length === 0) validPrefixes = prefixes;
+    }
+    const prefix =
+      validPrefixes[Math.floor(Math.random() * validPrefixes.length)];
     name += prefix;
 
     const prefixSyllables = this.countSyllables(prefix);
@@ -144,6 +155,7 @@ export class SyllableGenerator {
       includeContinent?: boolean;
       includePrepositions?: boolean;
       gender?: "masculine" | "feminine" | "neutral" | "any";
+      startingLetters?: string[];
     } = {}
   ): string {
     const words: string[] = [];
@@ -216,7 +228,10 @@ export class SyllableGenerator {
       // Use the corresponding syllable count, or default to the last one/2 if missing
       const count =
         syllablesArray[i] ?? syllablesArray[syllablesArray.length - 1] ?? 2;
-      words.push(this.generateWord(type, count, customSuffixes));
+      const startingLetter = options.startingLetters?.[i];
+      words.push(
+        this.generateWord(type, count, customSuffixes, startingLetter)
+      );
     }
 
     if (

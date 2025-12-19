@@ -394,6 +394,7 @@ export const PEOPLE_SUFFIXES_FEMININE = [
   "essa",
   "ette",
   "etta",
+  "enna",
   "is",
   "ys",
   "es",
@@ -408,5 +409,8 @@ export const PEOPLE_SUFFIXES_FEMININE = [
   "uh",
   "aya",
   "eya",
-  "iya",
+  "irya",
+  "ira",
+  "yra",
+  "yria"
 ];
